@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "ES2022",
+    "target": "ES2024",
+    "paths": {
+      "@client/*": ["./foundry/client/*"],
+      "@common/*": ["./foundry/common/*"]
+    }
+  },
+  "exclude": ["node_modules", "**/node_modules/*"],
+  "include": ["src/module.mjs","src/scripts/**/*.mjs", "foundry/client/client.mjs", "global.d.ts"],
+  "typeAcquisition": {
+    "include": ["jquery"]
+  }
+}
+

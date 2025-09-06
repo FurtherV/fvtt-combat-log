@@ -1,0 +1,306 @@
+#furtherv-combat-log {
+
+  // Define fixed log size
+  section.log {
+    min-width: 860px;
+    max-width: 860px;
+    min-height: 300px;
+    max-height: 300px;
+  }
+
+  /* ===== VARIABLES (Theme tokens) ===== */
+  @font-body: var(--font-primary, "Signika", "Inter", system-ui, sans-serif); // base readable font
+  @font-accent: var(--font-primary, "Cinzel", "Trajan Pro", serif); // fancy verbs
+
+  @c-bg: rgba(12, 12, 16, 0.75); // overall log backdrop
+  @c-panel: rgba(24, 24, 32, 0.8); // entry card background
+  @c-border: rgba(255, 255, 255, 0.10); // subtle border
+  @c-border-2: rgba(255, 255, 255, 0.16); // slightly stronger border for chips
+  @c-text: #eceaf7; // default text color
+  @c-muted: #bdb9d2; // secondary/less important text
+  @c-accent: #e5c07b; // gold accent (verbs, items)
+  @c-good: #46d27c; // green status
+  @c-bad: #ff6b6b; // red status
+  @c-info: #7aa2ff; // blue status
+
+  @radius-lg: 10px; // larger card rounding
+  @radius-sm: 7px; // small chip rounding
+
+  /* ===== MIXINS (Reusable style recipes) ===== */
+
+  // Generic badge / chip container
+  .chip() {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem; // space between text and icon/image
+    padding: 0.15rem 0.45rem; // compact horizontal padding
+    border-radius: @radius-sm;
+    border: 1px solid @c-border-2;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+    line-height: 1.05; // reduce vertical space
+    white-space: nowrap; // keep single line
+  }
+
+  // Colorful pill variant (reuses .chip)
+  .pill(@col) {
+    .chip();
+    color: @col;
+    border-color: fade(@col, 35%);
+    text-shadow: 0 0 4px fade(@col, 20%);
+  }
+
+  // Prepare for small avatar images inside chips (actors/items)
+  .chip-avatar(@size: 18px, @round: 6px) {
+    img {
+      width: @size;
+      height: @size;
+      object-fit: cover;
+      border-radius: @round;
+      flex: 0 0 @size; // fixed width
+      margin-right: 0.35rem; // space between img and text
+      box-shadow: 0 0 0 1px @c-border inset, 0 0 6px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  /* ===== LOG CONTAINER ===== */
+  section.log {
+    display: flex;
+    flex-direction: column;
+    gap: 4px; // space between entries
+    padding: 4px;
+    font-family: @font-body;
+    color: @c-text;
+    overflow-y: auto; // scroll if long
+
+    /* slim scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: fade(@c-accent, 35%) transparent;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, fade(@c-accent, 30%), fade(@c-accent, 15%));
+      border-radius: 999px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+  }
+
+  /* ===== SINGLE ENTRY CARD ===== */
+  .entry {
+    background: @c-panel;
+    backdrop-filter: saturate(120%) blur(4px);
+    border: 1px solid @c-border;
+    border-radius: @radius-lg;
+    padding: 5px 6px; // compact padding
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: max-content;
+    align-items: center;
+    gap: 6px;
+    line-height: 1.15; // reduced line height
+
+    &:hover {
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.28);
+    }
+
+    /* truncate long names to prevent tall wrapping */
+    .primary-actor,
+    .secondary-actor,
+    .item {
+      max-width: 50ch;
+      overflow: clip;
+      text-overflow: ellipsis;
+    }
+
+    /* ===== ACTORS ===== */
+    .primary-actor,
+    .secondary-actor {
+      .chip();
+      font-weight: 700;
+      .chip-avatar(24px, 4px); // ready for round portraits
+    }
+
+    .primary-actor+.verb::before {
+      content: "→"; // arrow separator
+      margin-right: 6px;
+      opacity: 0.55;
+    }
+
+    .secondary-actor::before {
+      content: "◆"; // diamond before target
+      font-size: 0.8em;
+      opacity: 0.6;
+      margin-right: 4px;
+      color: @c-bad;
+    }
+
+    /* ===== VERB ===== */
+    .verb {
+      font-family: @font-accent;
+      font-variant: small-caps;
+      font-weight: 800;
+      color: @c-accent;
+      text-shadow: 0 0 2px fade(@c-accent, 50%);
+    }
+
+    /* ===== SAVE TYPE ===== */
+    .save-type {
+      .pill(@c-info);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.7px;
+      padding: 0.1rem 0.4rem;
+    }
+
+    /* ===== PREPOSITION ===== */
+    .prepositional {
+      color: @c-muted;
+      font-style: italic;
+    }
+
+    /* ===== ITEM ===== */
+    .item {
+      .chip();
+      .chip-avatar(24px, 4px); // squarish icons
+      font-weight: 600;
+      font-style: italic;
+      border-color: fade(@c-accent, 22%);
+      color: lighten(@c-accent, 6%);
+    }
+
+    /* ===== ROLLS ===== */
+    .rolls {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: @c-muted;
+
+      /* parentheses wrapping rolls */
+      &::before {
+        content: "(";
+        opacity: 0.6;
+      }
+
+      &::after {
+        content: ")";
+        opacity: 0.6;
+      }
+
+      .damage-type {
+        width: 1.25rem;
+        height: 1.25rem;
+        filter: invert(50%);
+      }
+
+      .roll-total {
+        min-width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 999px;
+        border: 1px solid @c-border-2;
+        background: radial-gradient(100% 100% at 50% 30%, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+        display: inline-grid;
+        place-items: center;
+        font-weight: 800;
+        font-size: 0.9rem;
+        color: #f6f6ff;
+
+        &.discarded {
+          opacity: 50%;
+        }
+      }
+    }
+
+    .versus {
+      .chip();
+      color: @c-muted;
+      font-variant: small-caps;
+      letter-spacing: 0.6px;
+      font-weight: 700;
+      padding: 0.1rem 0.35rem;
+      flex: 0 0 auto;
+    }
+
+    .dc {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: @radius-sm;
+      border: 1px solid fade(@c-accent, 35%);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0));
+      line-height: 1.05;
+      white-space: nowrap;
+      color: lighten(@c-accent, 6%);
+      text-shadow: 0 0 4px fade(@c-accent, 20%);
+      font-weight: 900;
+      font-size: 0.85rem;
+      flex: 0 0 auto;
+    }
+
+    /* ===== STATUS ===== */
+    .status {
+      .pill(@c-info);
+      font-size: 0.75rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      position: relative;
+      margin-left: 0.5rem;
+
+      &.good {
+        .pill(@c-good);
+      }
+
+      &.bad {
+        .pill(@c-bad);
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        left: -0.5rem;
+        top: -0.25rem;
+        bottom: -0.25rem;
+        width: 2px;
+        background: @c-border-2;
+      }
+    }
+  }
+
+  /* alternate row striping */
+  .entry:nth-child(odd) {
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.015), rgba(255, 255, 255, 0));
+  }
+
+  /* ===== FOOTER ===== */
+
+  // Based on foundry2.css
+  .footer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+
+    button,
+    a.button {
+      --button-size: calc(1.25 * var(--input-height));
+      flex: 1;
+    }
+
+    label {
+      flex: none;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  }
+
+  // Custom
+  .footer {
+    margin-top: 0.5rem;
+  }
+}

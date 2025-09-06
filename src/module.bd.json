@@ -1,0 +1,62 @@
+{
+  "id": "furtherv-combat-log",
+  "version": "1.0.0",
+  "title": "FurtherV's Combat Log",
+  "description": "Adds a nicely formatted and readable combat log, so you know exactly what happened at a glance! ",
+  "projectUrl": "https://github.com/FurtherV/fvtt-combat-log",
+  "entryPoints": {
+    "main": "module.mjs",
+    "lang": "static/lang/**",
+    "templates": "templates/*"
+  },
+  "package": {
+    "create": false,
+    "name": "module",
+    "download": "https://github.com/FurtherV/fvtt-combat-log/releases/download/%config.version%/%config.package.name%.zip",
+    "manifest": "https://github.com/FurtherV/fvtt-combat-log/releases/latest/download/module.json"
+  },
+  "dest": "../dist",
+  "static": [
+    "static"
+  ],
+  "profile": {
+    "dev": {
+      "compress": false,
+      "sourcemaps": false,
+      "clean": false,
+      "hmr": true
+    },
+    "release": {
+      "compress": true,
+      "sourcemaps": false,
+      "clean": true,
+      "hmr": false,
+      "package": {
+        "create": true
+      }
+    }
+  },
+  "dependencies": {
+    "core": [
+      "13",
+      "13",
+      "13"
+    ],
+    "systems": {
+      "dnd5e": [
+        "5.0.0",
+        "5.0.3",
+        "5.9.9"
+      ]
+    }
+  },
+  "authors": [
+    {
+      "name": "FurtherV",
+      "url": "https://github.com/FurtherV"
+    }
+  ],
+  "flags": {},
+  "socket": false,
+  "storage": false
+}

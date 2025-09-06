@@ -1,0 +1,47 @@
+<section class="log">
+  {{#each entries as |entry|}}
+  <div class="entry">
+    <div class="primary-actor">
+      <img src="{{entry.primaryActor.img}}" alt="">
+      {{entry.primaryActor.name}}
+    </div>
+    <div class="verb">{{entry.verb}}</div>
+    {{#if entry.saveType}}
+    <div class="save-type">
+      {{entry.saveType}}
+    </div>
+    {{/if}}
+    {{#if entry.secondaryActor}}
+    <div class="secondary-actor">
+      <img src="{{entry.secondaryActor.img}}" alt="">
+      {{entry.secondaryActor.name}}
+    </div>
+    {{/if}}
+    {{#if entry.item}}
+    <div class="prepositional">{{entry.prepositional}}</div>
+    <div class="item">
+      <img src="{{entry.item.img}}" alt="">
+      {{entry.item.name}}
+    </div>
+    {{/if}}
+    <div class="rolls">
+      {{#each entry.rolls as |roll|}}
+      {{#if roll.type}}
+      <img class="damage-type" src="{{roll.type.icon}}" alt="" data-tooltip="{{roll.type.label}}">
+      {{/if}}
+      <span class="roll-total {{roll.cssClass}}" data-tooltip="{{roll.formula}}">{{roll.total}}</span>
+      {{#unless @last}}
+      <span>,</span>
+      {{/unless}}
+      {{/each}}
+    </div>
+    {{#if entry.dc}}
+    <div class="versus">{{entry.versus}}</div>
+    <div class="dc">{{entry.dc}}</div>
+    {{/if}}
+    {{#if entry.status}}
+    <div class="status {{entry.status.cssClass}}">{{entry.status.text}}</div>
+    {{/if}}
+  </div>
+  {{/each}}
+</section>

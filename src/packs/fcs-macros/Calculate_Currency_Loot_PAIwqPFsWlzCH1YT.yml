@@ -1,0 +1,23 @@
+_id: PAIwqPFsWlzCH1YT
+name: Calculate Currency Loot
+type: script
+scope: global
+img: icons/svg/coins.svg
+command: game.modules.get("furtherv-custom-stuff").api.macros.calculateCurrencyLoot();
+author: fcs0000000000000
+flags: {}
+_stats:
+  coreVersion: '13.346'
+  systemId: null
+  systemVersion: null
+  createdTime: null
+  modifiedTime: null
+  lastModifiedBy: null
+  compendiumSource: null
+  duplicateSource: null
+  exportSource: null
+folder: null
+sort: 0
+ownership:
+  default: 0
+_key: '!macros!PAIwqPFsWlzCH1YT'

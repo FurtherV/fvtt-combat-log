@@ -1,0 +1,86 @@
+name: Release Creation
+
+on:
+  release:
+    types: [published]
+
+# Needed so this workflow can attach files to the GitHub release
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Grab our repo
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      # Get the version number from our release (from the tag)
+      - name: Extract tag version number
+        id: get_version
+        uses: battila7/get-version-action@v2
+
+      # Set up Node.js with caching for npm dependencies
+      - name: Use Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22.19.0'
+          cache: 'npm'
+
+      # Install required npm packages
+      - name: Install npm dependencies
+        run: npm ci
+
+      # Build using badger-den
+      #   - outputs ./dist/module.zip (zip is fixed name now)
+      #   - also outputs an unzipped folder with module.json inside
+      - name: Build release
+        run: npm run build -- --config-version "${VERSION}"
+        env:
+          VERSION: ${{ steps.get_version.outputs.version }}
+
+      # Locate the build artifacts:
+      #   - Verify the fixed zip file exists at ./dist/module.zip
+      #   - Auto-detect the first module.json file inside the unzipped build folder
+      - name: Locate module.json and verify zip
+        id: locate
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # The zip path is fixed
+          ZIP_PATH="dist/module.zip"
+          if [[ ! -f "$ZIP_PATH" ]]; then
+            echo "Expected ZIP not found at $ZIP_PATH" >&2
+            exit 1
+          fi
+
+          # Find the first module.json inside dist/** (unzipped build output)
+          MODULE_JSON="$(find dist -type f -name 'module.json' -print -quit || true)"
+          if [[ -z "${MODULE_JSON}" ]]; then
+            echo "module.json not found under ./dist" >&2
+            exit 1
+          fi
+
+          # Expose both paths as step outputs for later use
+          echo "module=${MODULE_JSON}" >> "$GITHUB_OUTPUT"
+          echo "zip=${ZIP_PATH}" >> "$GITHUB_OUTPUT"
+
+          echo "Found module.json: ${MODULE_JSON}"
+          echo "Using zip: ${ZIP_PATH}"
+
+      # Attach the artifacts (zip + module.json) to the GitHub release
+      - name: Update Release with Files
+        if: "!github.event.release.prerelease" # skip prereleases
+        id: create_version_release
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          name: ${{ github.event.release.name }}
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "${{ steps.locate.outputs.module }},${{ steps.locate.outputs.zip }}"
+          tag: ${{ github.event.release.tag_name }}
+          body: ${{ github.event.release.body }}
