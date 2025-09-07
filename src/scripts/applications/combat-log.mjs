@@ -122,7 +122,7 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
 
     const entries = [];
     for (const message of messages) {
-      const targets = message.getFlag("dnd5e", "targets") ?? [];
+      const targets = [...(message.getFlag("dnd5e", "targets") ?? [])];
       const rollType = message.getFlag("dnd5e", "roll.type");
       if (!targets.length) {
         targets.push(null);
