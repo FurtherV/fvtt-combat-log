@@ -40,12 +40,15 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render({ force: false });
   });
 
-  _getVerbFromRollType(type, special) {
-    if (type === "attack") return "attacks";
-    if (type === "damage") {
-      return special ? "damages" : "deals damage";
+  _getVerbFromRollInfo(rollType, damageTypes, hasTarget) {
+    if (rollType === "attack") return "attacks";
+    if (rollType === "damage") {
+      if (!damageTypes.includes("healing"))
+        return hasTarget ? "damages" : "deals damage";
+
+      return "heals";
     }
-    if (type === "save") return "saves";
+    if (rollType === "save") return "saves";
 
     return "rolls";
   }
@@ -133,7 +136,7 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
         entry.primaryActor = message.getAssociatedActor();
         if (entry.primaryActor == null) continue; // skip messages where the speaker has no actor
 
-        entry.verb = this._getVerbFromRollType(rollType, target != null);
+        entry.verb = this._getVerbFromRollInfo(rollType, message.rolls.flatMap((x) => x.options.types), target != null);
         if (rollType === "save") {
           entry.saveType = message.getFlag("dnd5e", "roll.ability");
         }
