@@ -141,9 +141,10 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
           entry.saveType = message.getFlag("dnd5e", "roll.ability");
         }
         entry.secondaryActor = targetActor;
-        entry.item = message.getAssociatedItem() || null;
+        // for saves we want the thing we saved against, not the nonexistent item we saved with.
+        entry.item = message.getOriginatingMessage()?.getAssociatedItem() ?? null;
         if (entry.item != null) {
-          entry.prepositional = "using";
+          entry.prepositional = rollType === "save" ? "against" : "using";
         }
         entry.versus = "VS";
         entry.dc = this._getDifficultyClassFromMessage(message, rollType);
