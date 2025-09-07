@@ -17,3 +17,4 @@ Currently there is not button to open the CombatLog application, but you can pas
 - Allow target selection and damage application from Combat Log
 - Allow font size adjustments of the Combat Log
 - Allow user CSS overwrite
+- Use i18n instead of hard coded strings
