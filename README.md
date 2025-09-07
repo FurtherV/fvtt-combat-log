@@ -7,6 +7,8 @@ It shows attack rolls, damage rolls, saving throws and manual rolls, including t
 
 **Do note that the combat log is currently quite wide, at least 900px. A future version will include a variant that can be less wide.**
 
+![Preview](./.github/images/Preview-1.png)
+
 ## How To Use
 
 Currently there is not button to open the CombatLog application, but you can paste the following code into your console or a script macro in order to open it: `ui.combatlog.render({force: true})`.
