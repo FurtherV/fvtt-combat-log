@@ -34,7 +34,7 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
   /** ===== PROPERTIES ===== */
   autoRefresh = true;
 
-  /** ===== METHODS ===== */
+  /** ===== CUSTOM METHODS ===== */
   _triggerAutoRefresh = foundry.utils.debounce(() => {
     if (!this.autoRefresh) return;
     this.render({ force: false });
@@ -115,6 +115,8 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
       return ({ total: total });
     });
   }
+
+  /** ===== OVERRIDE METHODS ===== */
 
   /**
    * @inheritdoc
