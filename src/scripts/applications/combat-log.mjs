@@ -50,10 +50,13 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
     }
     if (rollType === "save") return "saves";
 
+    if (["ability", "skill", "tool"].includes(rollType)) return "checks";
+
     return "rolls";
   }
 
-  _getDifficultyClassFromMessage(message, rollType) {
+  _getDifficultyClassFromMessage(message) {
+    const rollType = message.getFlag("dnd5e", "roll.type");
     if (message.rolls[0]?.options?.target == null) return undefined;
 
     let prefix = "";
@@ -62,7 +65,7 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
       prefix = "AC";
     }
 
-    if (rollType === "save") {
+    if (["save", "ability", "skill", "tool"].includes(rollType)) {
       prefix = "DC";
     }
 
@@ -80,7 +83,7 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
     const primaryRoll = message.rolls[0];
     if ((!primaryRoll.options.target) && (rollType !== "damage")) return undefined;
 
-    if (rollType === "save") {
+    if (["save", "ability", "skill"].includes(rollType)) {
       return primaryRoll.isSuccess ? { cssClass: "good", text: "SUCC" } : { cssClass: "bad", text: "FAIL" };
     }
 
@@ -139,8 +142,12 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
         if (entry.primaryActor == null) continue; // skip messages where the speaker has no actor
 
         entry.verb = this._getVerbFromRollInfo(rollType, message.rolls.flatMap((x) => x.options.types), target != null);
-        if (rollType === "save") {
-          entry.saveType = message.getFlag("dnd5e", "roll.ability");
+        if (["save", "ability", "skill"].includes(rollType)) {
+          if (rollType === "skill") {
+            entry.statType = CONFIG.DND5E.skills[message.getFlag("dnd5e", "roll.skillId")]?.label;
+          } else {
+            entry.statType = CONFIG.DND5E.abilities[message.getFlag("dnd5e", "roll.ability")]?.label;
+          }
         }
         entry.secondaryActor = targetActor;
         // for saves we want the thing we saved against, not the nonexistent item we saved with.
@@ -160,19 +167,13 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
     return context;
   }
   /**
-   * Brainstorm
-   * ATTACKER_NAME attacks TARGET_NAME using ITEM_NAME: ROLLS vs AC: C.HIT / HIT / MISS / C.MISS
-   * ATTACKER_NAME attacks using ITEM_NAME: ROLLS
-   *
-   * ATTACKER_NAME damages TARGET_NAME using ITEM_NAME: ROLLS: C.HIT / NORMAL
-   * ATTACKER_NAME deals damage using ITEM_NAME: ROLLS: C.HIT / NORMAL
-   *
-   * TARGET_NAME saves (SAVE_NAME) against ITEM_NAME: ROLLS: SUCCESS / FAILURE
-   * TARGET_NAME saves (SAVE_NAME): ROLLS
-   *
-   * ATTACKER_NAME uses ITEM_NAME: ROLLS
-   *
-   * ATTACKER_NAME rolls: ROLLS
+   * Formatting
+   * [Primary Actor] → SAVES [ABILITY] against [Item] ( [rolls] ) VS DC [N] [SUCC/FAIL]
+   * [Primary Actor] → ATTACKS [Secondary Actor] using [Item] ( [rolls] ) VS AC [N] [HIT/MISS/C.HIT/C.MISS]
+   * [Primary Actor] → DEALS DAMAGE [to Secondary Actor] using [Item] ( [damage rolls with icons] ) [NORMAL/CRIT]
+   * [Primary Actor] → CHECKS [ABILITY/SKILL] ( [rolls] ) [VS DC N] [SUCC/FAIL]
+   * [Primary Actor] → CHECKS using [Tool] ( [rolls] ) [VS DC N] [SUCC/FAIL]
+   * [Primary Actor] → ROLLS ( [rolls] )
    */
 
   /**
