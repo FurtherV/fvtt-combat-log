@@ -20,3 +20,7 @@ Currently there is not button to open the CombatLog application, but you can pas
 - Allow font size adjustments of the Combat Log
 - Allow user CSS overwrite
 - Use i18n instead of hard coded strings
+- Handle ability and skill checks
+- On damage rolls with available targets, show reduced damage as well
+- Add button to scroll to chat message
+  - Might be difficult because we would have to load a lot of history
