@@ -304,3 +304,19 @@
     margin-top: 0.5rem;
   }
 }
+
+#view-combat-log {
+  pointer-events: all;
+  margin: 0 0 -8px;
+  color: var(--color-text-light-highlight);
+  width: var(--players-width, 200px);
+  background: rgba(0, 0, 0, 0.8);
+  border: 1px solid var(--color-border-dark);
+  cursor: var(--cursor-pointer);
+  height: 40px;
+
+  &:hover {
+    border-color: var(--color-border-highlight-alt);
+    box-shadow: 0 0 10px var(--color-shadow-highlight);
+  }
+}

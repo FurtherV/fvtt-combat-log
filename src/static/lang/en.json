@@ -1,3 +1,5 @@
 {
-  "FURTHERV-COMBAT-LOG": {}
+  "FURTHERV-COMBAT-LOG": {
+    "viewCombatLog": "View Combat Log"
+  }
 }

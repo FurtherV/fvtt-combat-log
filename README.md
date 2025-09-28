@@ -11,11 +11,10 @@ It shows attack rolls, damage rolls, saving throws and manual rolls, including t
 
 ## How To Use
 
-Currently there is not button to open the CombatLog application, but you can paste the following code into your console or a script macro in order to open it: `ui.combatlog.render({force: true})`.
+The combat log can be opened from the button in the left sidebar. You can also open it through scripts, such as macros, using `ui.combatlog.render({ force: true })`.
 
 ## Roadmap
 
-- Implement a button to open Combat Log
 - Allow target selection and damage application from Combat Log
 - Allow font size adjustments of the Combat Log
 - Allow user CSS overwrite
