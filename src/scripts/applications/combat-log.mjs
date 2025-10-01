@@ -179,6 +179,14 @@ export class CombatLog extends HandlebarsApplicationMixin(ApplicationV2) {
   /**
    * @inheritdoc
    */
+  async close(options) {
+    if (options?.closeKey) return this;
+    return super.close(options);
+  }
+
+  /**
+   * @inheritdoc
+   */
   _onRender(context, options) {
     const autoRefreshInput = this.element.querySelector(`input[name="autoRefresh"]`);
     autoRefreshInput.addEventListener("change", (e) => {
